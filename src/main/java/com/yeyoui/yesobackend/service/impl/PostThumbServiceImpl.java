@@ -1,9 +1,18 @@
 package com.yeyoui.yesobackend.service.impl;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yeyoui.yesobackend.common.ErrorCode;
+import com.yeyoui.yesobackend.constant.CommonConstant;
 import com.yeyoui.yesobackend.mapper.PostThumbMapper;
+import com.yeyoui.yesobackend.model.dto.post.PostEsDTO;
+import com.yeyoui.yesobackend.model.dto.post.PostQueryRequest;
 import com.yeyoui.yesobackend.model.entity.Post;
 import com.yeyoui.yesobackend.model.entity.PostThumb;
 import com.yeyoui.yesobackend.model.entity.User;
@@ -12,7 +21,19 @@ import com.yeyoui.yesobackend.exception.BusinessException;
 import com.yeyoui.yesobackend.service.PostService;
 
 import javax.annotation.Resource;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.sort.*;
 import org.springframework.aop.framework.AopContext;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -97,7 +118,6 @@ public class PostThumbServiceImpl extends ServiceImpl<PostThumbMapper, PostThumb
             }
         }
     }
-
 }
 
 

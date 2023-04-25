@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.yeyoui.yesobackend.model.entity.Post;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import lombok.Data;
@@ -12,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -20,8 +22,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  *
  * @author <a href="https://github.com/yeyoui">夜悠</a>
  **/
-// todo 取消注释开启 ES（须先配置 ES）
-//@Document(indexName = "post")
+@Document(indexName = "post")
 @Data
 public class PostEsDTO implements Serializable {
 
@@ -48,15 +49,15 @@ public class PostEsDTO implements Serializable {
      */
     private List<String> tags;
 
-    /**
-     * 点赞数
-     */
-    private Integer thumbNum;
-
-    /**
-     * 收藏数
-     */
-    private Integer favourNum;
+//    /**
+//     * 点赞数
+//     */
+//    private Integer thumbNum;
+//
+//    /**
+//     * 收藏数
+//     */
+//    private Integer favourNum;
 
     /**
      * 创建用户 id
@@ -80,6 +81,11 @@ public class PostEsDTO implements Serializable {
      */
     private Integer isDelete;
 
+    /**
+     * 搜索补全
+     */
+    private List<String> suggestion;
+
     private static final long serialVersionUID = 1L;
 
     private static final Gson GSON = new Gson();
@@ -100,6 +106,7 @@ public class PostEsDTO implements Serializable {
         if (StringUtils.isNotBlank(tagsStr)) {
             postEsDTO.setTags(GSON.fromJson(tagsStr, new TypeToken<List<String>>() {
             }.getType()));
+            postEsDTO.setSuggestion(Arrays.asList(post.getTitle()));
         }
         return postEsDTO;
     }

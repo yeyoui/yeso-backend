@@ -4,7 +4,9 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.yeyoui.yesobackend.common.ErrorCode;
 import com.yeyoui.yesobackend.exception.BusinessException;
+import com.yeyoui.yesobackend.model.dto.post.PostQueryRequest;
 import com.yeyoui.yesobackend.model.entity.Picture;
+import com.yeyoui.yesobackend.model.entity.Post;
 import com.yeyoui.yesobackend.service.PictureService;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -48,5 +50,12 @@ public class PictureServiceImpl implements PictureService {
         Page<Picture> picturePage = new Page<>(pageNum, pageSize);
         picturePage.setRecords(pictures);
         return picturePage;
+    }
+
+
+    public Page<Post> searchFromEs(PostQueryRequest postQueryRequest){
+
+
+        return null;
     }
 }

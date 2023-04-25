@@ -12,7 +12,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
  *
  * @author <a href="https://github.com/yeyoui">夜悠</a>
  */
-// todo 如需开启 Redis，须移除 exclude 中的内容
 @SpringBootApplication(exclude = {RedisAutoConfiguration.class})
 @MapperScan("com.yeyoui.yesobackend.mapper")
 @EnableScheduling
