@@ -20,16 +20,15 @@ import com.yeyoui.yesobackend.service.UserService;
 import com.yeyoui.yesobackend.model.dto.post.PostUpdateRequest;
 import com.yeyoui.yesobackend.model.vo.PostVO;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 帖子接口
@@ -210,6 +209,21 @@ public class PostController {
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
         Page<Post> postPage = postService.searchFromEs(postQueryRequest);
         return ResultUtils.success(postService.getPostVOPage(postPage, request));
+    }
+
+    @GetMapping("/suggestion")
+    public BaseResponse<List<Map<String,String>>> getSuggestion(@RequestParam("key") String prefix){
+        List<String> titleSuggestions = postService.getTitleSuggestions(prefix);
+        List<Map<String,String>> resultMap=new ArrayList<>();
+        titleSuggestions.forEach(item->{
+            HashMap<String, String> map = new HashMap<>();
+            map.put("value",item);
+            map.put("category",item);
+            map.put("count","1");
+
+            resultMap.add(map);
+        });
+        return ResultUtils.success(resultMap);
     }
 
     /**

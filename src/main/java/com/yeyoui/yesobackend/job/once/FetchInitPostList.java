@@ -52,8 +52,8 @@ public class FetchInitPostList implements CommandLineRunner {
             String tagsStr = JSONUtil.toJsonStr(tagsArr);
             post.setTags(tagsStr);
             post.setUserId(1L);
-            post.setCreateTime(new Date());
-            post.setUpdateTime(new Date());
+//            post.setCreateTime(new Date());
+//            post.setUpdateTime(new Date());
 
             postList.add(post);
         }

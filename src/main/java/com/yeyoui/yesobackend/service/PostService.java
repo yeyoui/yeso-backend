@@ -7,6 +7,7 @@ import com.yeyoui.yesobackend.model.dto.post.PostQueryRequest;
 import com.yeyoui.yesobackend.model.entity.Post;
 import com.yeyoui.yesobackend.model.vo.PostVO;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 帖子服务
@@ -63,4 +64,9 @@ public interface PostService extends IService<Post> {
      * @return
      */
     Page<PostVO> listPostVoPage(PostQueryRequest postQueryRequest,HttpServletRequest request);
+
+    /**
+     * 搜索词建议（标题）
+     */
+    List<String> getTitleSuggestions(String prefix);
 }

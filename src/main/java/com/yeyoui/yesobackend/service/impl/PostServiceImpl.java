@@ -23,11 +23,8 @@ import com.yeyoui.yesobackend.model.vo.UserVO;
 import com.yeyoui.yesobackend.service.PostService;
 import com.yeyoui.yesobackend.service.UserService;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.io.IOException;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -35,12 +32,20 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
+import org.elasticsearch.search.suggest.Suggest;
+import org.elasticsearch.search.suggest.SuggestBuilder;
+import org.elasticsearch.search.suggest.SuggestBuilders;
+import org.elasticsearch.search.suggest.completion.CompletionSuggestion;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -71,6 +76,8 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
 
     @Resource
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
+    @Resource
+    private RestHighLevelClient elasticSearchClient;
 
     @Override
     public void validPost(Post post, boolean add) {
@@ -333,6 +340,33 @@ public class PostServiceImpl extends ServiceImpl<PostMapper, Post> implements Po
         Page<Post> postPage = this.page(new Page<>(current, size),
                 this.getQueryWrapper(postQueryRequest));
         return this.getPostVOPage(postPage,request);
+    }
+
+    @Override
+    public List<String> getTitleSuggestions(String prefix) {
+        SearchRequest searchRequest = new SearchRequest("post");
+        searchRequest.source()
+                .suggest(new SuggestBuilder().addSuggestion(
+                        "titleSuggesion",
+                        SuggestBuilders.completionSuggestion("suggestion")
+                                .prefix(prefix)
+                                .size(10)
+                ));
+        SearchResponse response = null;
+        try {
+            response = elasticSearchClient.search(searchRequest, RequestOptions.DEFAULT);
+        } catch (IOException e) {
+            return Collections.emptyList();
+        }
+        Suggest suggest = response.getSuggest();
+        CompletionSuggestion suggestion=suggest.getSuggestion("titleSuggesion");
+        List<CompletionSuggestion.Entry.Option> options = suggestion.getOptions();
+        List<String> searchSuggestion=new ArrayList<>();
+        for (CompletionSuggestion.Entry.Option option : options) {
+            String s = option.getText().toString();
+            searchSuggestion.add(s);
+        }
+        return searchSuggestion;
     }
 
 }
